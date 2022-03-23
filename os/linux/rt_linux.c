@@ -1276,8 +1276,8 @@ static inline NDIS_STATUS __RtmpOSTaskAttach(
 #ifdef KTHREAD_SUPPORT
 	pTask->task_killed = 0;
 	pTask->kthread_task = NULL;
-	pTask->kthread_task =
-	    kthread_run((cast_fn) fn, (void *)arg, pTask->taskName);
+//	pTask->kthread_task =
+//	    kthread_run((cast_fn) fn, (void *)arg, pTask->taskName);
 	if (IS_ERR(pTask->kthread_task))
 		status = NDIS_STATUS_FAILURE;
 #else
@@ -1687,7 +1687,7 @@ int RtmpOSNetDevAddrSet(
 	}
 #endif /* CONFIG_STA_SUPPORT */
 
-	NdisMoveMemory(net_dev->dev_addr, pMacAddr, 6);
+	//NdisMoveMemory(net_dev->dev_addr, pMacAddr, 6);
 
 	return 0;
 }
@@ -2016,8 +2016,8 @@ int RtmpOSNetDevAttach(
 #endif /* CONFIG_APSTA_MIXED_SUPPORT */
 #endif /* CONFIG_WIRELESS_EXT */
 		/* copy the net device mac address to the net_device structure. */
-		NdisMoveMemory(pNetDev->dev_addr, &pDevOpHook->devAddr[0],
-			       MAC_ADDR_LEN);
+//		NdisMoveMemory(pNetDev->dev_addr, &pDevOpHook->devAddr[0],
+//			       MAC_ADDR_LEN);
 
 		rtnl_locked = pDevOpHook->needProtcted;
 	}

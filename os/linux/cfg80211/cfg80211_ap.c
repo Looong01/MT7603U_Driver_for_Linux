@@ -974,7 +974,8 @@ BOOLEAN CFG80211DRV_ApKeyAdd(
 		}
 		else
 		{
-			if (pKeyInfo->MAC)
+			//if (pKeyInfo->MAC)
+			if (1)
 				pEntry = MacTableLookup(pAd, pKeyInfo->MAC);
 				
 			if(pEntry)
@@ -1044,7 +1045,8 @@ BOOLEAN CFG80211DRV_ApKeyAdd(
 		}
 		else
 		{
-			if (pKeyInfo->MAC)
+			//if (pKeyInfo->MAC)
+			if (1)
 				pEntry = MacTableLookup(pAd, pKeyInfo->MAC);
 				
 			if(pEntry)

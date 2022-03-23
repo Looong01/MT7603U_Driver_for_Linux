@@ -1360,7 +1360,7 @@ VOID PeerAddBAReqAction(RTMP_ADAPTER *pAd, MLME_QUEUE_ELEM *Elem)
 		{
 //			ActHeaderInit(pAd, &ADDframe.Hdr, pAddr, pMacEntry->wdev->if_addr,  pMacEntry->wdev->bssid /*pMacEntry->bssid*/);
 
-			if(pMacEntry->wdev && pMacEntry->wdev->if_addr && pMacEntry->wdev->bssid)
+			if(pMacEntry->wdev )
 			{
 				ActHeaderInit(pAd, &ADDframe.Hdr, pAddr, pMacEntry->wdev->if_addr,  pMacEntry->wdev->bssid /*pMacEntry->bssid*/);
 
@@ -1371,9 +1371,9 @@ VOID PeerAddBAReqAction(RTMP_ADAPTER *pAd, MLME_QUEUE_ELEM *Elem)
 					DBGPRINT(RT_DEBUG_ERROR,("ACTION - PeerBAAction() pMacEntry->wdev is NULL \n"));
 				else 
 				{
-					if(pMacEntry->wdev->if_addr == NULL)		
+					//if(pMacEntry->wdev->if_addr == NULL)		
 						DBGPRINT(RT_DEBUG_ERROR,("ACTION - PeerBAAction() pMacEntry->wdev->if_addr is NULL \n"));
-					if(pMacEntry->wdev->bssid == NULL)		
+					//if(pMacEntry->wdev->bssid == NULL)		
 						DBGPRINT(RT_DEBUG_ERROR,("ACTION - PeerBAAction() pMacEntry->wdev->bssid is NULL \n"));
 				}
 				MlmeFreeMemory(pAd, pOutBuffer);

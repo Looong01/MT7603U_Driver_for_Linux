@@ -811,7 +811,7 @@ static BOOLEAN USBDevConfigInit(struct usb_device *dev, struct usb_interface *in
 		}
 	}
 
-	if (!(pConfig->BulkInEpAddr && pConfig->BulkOutEpAddr[0])) 
+	if (!( pConfig->BulkOutEpAddr[0])) 
 	{
 		DBGPRINT(RT_DEBUG_OFF, ("%s: Could not find both bulk-in and bulk-out endpoints\n", __FUNCTION__));
 		return FALSE;
