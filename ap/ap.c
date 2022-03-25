@@ -804,8 +804,9 @@ VOID APStartUp(RTMP_ADAPTER *pAd)
 		set_wdev_if_addr(pAd, wdev, OPMODE_AP);
 		if (wdev->if_dev)
 		{
-//			NdisMoveMemory(RTMP_OS_NETDEV_GET_PHYADDR(wdev->if_dev),
-//								wdev->if_addr, MAC_ADDR_LEN);
+			//dev_addr_set(wdev->if_dev, wdev->if_addr);
+			NdisMoveMemory((void *)RTMP_OS_NETDEV_GET_PHYADDR(wdev->if_dev),
+								wdev->if_addr, MAC_ADDR_LEN);
 		}
 		COPY_MAC_ADDR(wdev->bssid, wdev->if_addr);
 

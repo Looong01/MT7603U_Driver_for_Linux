@@ -4510,7 +4510,7 @@ static const iw_handler rt_handler[] =
 	(iw_handler) rt_ioctl_giwpriv,		/* SIOCSIWPRIV  for Android */
 	(iw_handler) NULL /* kernel code */,    /* SIOCGIWPRIV   */
 	(iw_handler) NULL /* not used */,		/* SIOCSIWSTATS  */
-//	(iw_handler) rt28xx_get_wireless_stats /* kernel code */,    /* SIOCGIWSTATS  */
+	(void *) rt28xx_get_wireless_stats /* kernel code */,    /* SIOCGIWSTATS  */
 	(iw_handler) NULL,		                /* SIOCSIWSPY    */
 	(iw_handler) NULL,		                /* SIOCGIWSPY    */
 	(iw_handler) NULL,				        /* SIOCSIWTHRSPY */
