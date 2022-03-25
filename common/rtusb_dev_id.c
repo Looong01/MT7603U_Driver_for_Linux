@@ -1,3 +1,4 @@
+#define Fantasy DDFantasies
 /****************************************************************************
  * Ralink Tech Inc.
  * 4F, No. 2 Technology 5th Rd.
@@ -298,7 +299,11 @@ USB_DEVICE_ID rtusb_dev_id[] = {
 //	{USB_DEVICE(0x0E8D,0x7609)},
 //	{USB_DEVICE(0x0E8D,0x760A)},
 //	{USB_DEVICE(0x0E8D,0x760B)},
+#ifndef Fantasy
+	{USB_DEVICE(0x0E8D,0x760C)},
+#else
 	{USB_DEVICE(0x0E8D,0x0DDF)},
+#endif
 //	{USB_DEVICE(0x0E8D,0x760D)},
 //	{USB_DEVICE(0x0E8D,0x760E)},
 //	{USB_DEVICE(0x0E8D,0x760F)},
