@@ -153,6 +153,7 @@ VOID BuildChannelList(RTMP_ADAPTER *pAd)
 		pAd->CommonCfg.CountryRegion, pAd->CommonCfg.CountryRegionForABand, pAd->RfIcType, pAd->CommonCfg.PhyMode, pAd->ChannelListNum));
 
 #ifdef RT_CFG80211_SUPPORT
+/*
 	for (i=0; i<pAd->ChannelListNum; i++)
 	{
 		CFG80211OS_ChanInfoInit(
@@ -163,7 +164,8 @@ VOID BuildChannelList(RTMP_ADAPTER *pAd)
 					WMODE_CAP_N(pAd->CommonCfg.PhyMode),
 					(pAd->CommonCfg.RegTransmitSetting.field.BW == BW_20));
 	}
-
+*/
+//this will cause panic
 #ifdef CFG80211_BUILD_CHANNEL_LIST
 
 /*
