@@ -3,6 +3,10 @@
 
 this repo will deprecated while mt76 driver support mt7603 with usb interface.
 
+Please note, this driver based on old ralink vendor driver, unstable.Void Warry. May cause kernel panic when loading is known issue.
+
+If you have usb wifi based on mt7603u and interest on this , feel free to test this driver , and let mt76 driver support mt7603u ASAP.
+
 ### How to use
 
 install linux-header
