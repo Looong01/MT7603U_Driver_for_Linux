@@ -7,6 +7,8 @@ Please note, this driver based on old ralink vendor driver, unstable.Void Warry.
 
 If you have usb wifi based on mt7603u and interest on this , feel free to test this driver , and let mt76 driver support mt7603u ASAP.
 
+branch `mt76-03-usb` is based on mt76 driver clone from OpenWRT. But this branch didn't complete. Only have driver compiled, need real hardware to debug and fix.
+
 ### How to use
 
 install linux-header
