@@ -2739,7 +2739,9 @@ VOID MlmeDeAuthAction(
 		{
 			ULONG	TmpLen;
 			UINT	res_len = LEN_CCMP_HDR + LEN_CCMP_MIC;
-			UCHAR	res_buf[res_len];
+			UCHAR	*res_buf = NULL;
+			res_buf = vmalloc(res_len);
+			if (!res_buf) return;
 
 			/* reserve a buffer for PMF CCMP calculation later */
 			MakeOutgoingFrame(pOutBuffer + FrameLen,	&TmpLen,
@@ -2749,6 +2751,8 @@ VOID MlmeDeAuthAction(
 
 			/* Indicate this is a unicast Robust management frame */
 			DeAuthHdr.FC.Wep = 1;
+
+			vfree(res_buf);
 		}
 #endif /* DOT11_PMF_SUPPORT */
 

@@ -750,6 +750,7 @@ NTSTATUS PMF_RsnCapableValidation(
 	UINT8 count;
 	PUINT8 pBuf = NULL;
 	BOOLEAN	peer_MFPC = FALSE, peer_MFPR = FALSE;
+	RSN_CAPABILITIES RsnCap;
 
 	/* Check the peer's MPFC and MPFR -
 	   Refer to Table 8-1a, IEEE 802.11W to check the PMF policy */
@@ -764,7 +765,6 @@ NTSTATUS PMF_RsnCapableValidation(
 	}
 	else
 	{
-		RSN_CAPABILITIES RsnCap;
 
 		NdisMoveMemory(&RsnCap, pBuf, sizeof(RSN_CAPABILITIES));				
 		RsnCap.word = cpu2le16(RsnCap.word);

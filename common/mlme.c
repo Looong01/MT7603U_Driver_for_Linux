@@ -6172,6 +6172,7 @@ VOID BssTableSsidSort(
 	PWSC_CTRL	pWpsCtrl = &pAd->StaCfg.WscControl;
 #endif /* WSC_STA_SUPPORT */
 	struct wifi_dev *wdev = &pAd->StaCfg.wdev;
+	RSN_CAPABILITIES RsnCap;
 
 	BssTableInit(OutTab);
 
@@ -6263,7 +6264,6 @@ VOID BssTableSsidSort(
                                 CLIENT_STATUS_CLEAR_FLAG(pInBss, fCLIENT_STATUS_PMF_CAPABLE);
                                 CLIENT_STATUS_CLEAR_FLAG(pInBss, fCLIENT_STATUS_USE_SHA256);
                                 
-                                RSN_CAPABILITIES RsnCap;
                 		NdisMoveMemory(&RsnCap, &pInBss->WPA2.RsnCapability, sizeof(RSN_CAPABILITIES));
                 		RsnCap.word = cpu2le16(RsnCap.word);                                
                                 if ((pAd->StaCfg.PmfCfg.MFPR) && (RsnCap.field.MFPC == FALSE))
