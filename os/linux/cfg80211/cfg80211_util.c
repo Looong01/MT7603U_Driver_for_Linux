@@ -333,16 +333,12 @@ BOOLEAN CFG80211_SupBandInit(
 		if (IdLoop >= 14)
 		{
 			pChannels[IdLoop].band = KAL_BAND_5GHZ;
-			pChannels[IdLoop].center_freq = \
-				(UINT16)ieee80211_channel_to_frequency(
-					Cfg80211_Chan[IdLoop], KAL_BAND_5GHZ);
+			pChannels[IdLoop].center_freq = (UINT16)ieee80211_channel_to_frequency(Cfg80211_Chan[IdLoop], KAL_BAND_5GHZ);
 		}
 		else
 		{
 			pChannels[IdLoop].band = KAL_BAND_2GHZ;
-		    pChannels[IdLoop].center_freq = \
-				(UINT16)ieee80211_channel_to_frequency(
-					Cfg80211_Chan[IdLoop], KAL_BAND_2GHZ);
+			pChannels[IdLoop].center_freq = (UINT16)ieee80211_channel_to_frequency(Cfg80211_Chan[IdLoop], KAL_BAND_2GHZ);
 		}
 #else
 		pChannels[IdLoop].center_freq = ieee80211_channel_to_frequency(Cfg80211_Chan[IdLoop]);
