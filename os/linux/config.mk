@@ -315,11 +315,10 @@ HAS_HT40_DISABLE_SHORT_GI=n
 HAS_BSS_COEX_DISABLE=n
 
 #Treat compile Warning as Error
-ifndef CONFIG_KASAN
+
 # KASAN need high version of GCC, many compile errors in
 # this module, so disable -Werror option
-HAS_COMPILE_WARNING_AS_ERROR=y
-endif
+HAS_COMPILE_WARNING_AS_ERROR=n
 
 #ifdef OS_ABL_FUNC_SUPPORT
 ifeq ($(OSABL),YES)
