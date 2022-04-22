@@ -12,6 +12,7 @@
 #include <linux/vmalloc.h>
 #include <asm/io.h>
 #include "rt_config.h"
+#define RTMPQMemAddr RTMPQMemAddr_mt7603u
 
 enum BLK_TYPE {
 	BLK_TX0,

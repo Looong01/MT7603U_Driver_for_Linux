@@ -17,6 +17,7 @@
 
 
 #include	"rt_config.h"
+#define RTMPQMemAddr RTMPQMemAddr_mt7603u
 
 #ifdef	USB_BULK_BUF_PREALLOC
 void *RTMPQMemAddr(int size, int index, dma_addr_t *pDmaAddr, int type);
