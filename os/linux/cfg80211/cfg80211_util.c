@@ -153,17 +153,6 @@ static const UINT32 CipherSuites[] = {
 #endif /* DOT11W_PMF_SUPPORT */	
 };
 
-static BOOLEAN IsRadarChannel(UCHAR ch)
-{
-	UINT idx = 0;
-	for (idx = 0; idx<sizeof(Cfg80211_RadarChan); idx++)
-	{
-		if (Cfg80211_RadarChan[idx] == ch)
-			return TRUE;
-	}
-	
-	return FALSE;
-}
 
 /*
 ========================================================================
@@ -206,11 +195,6 @@ VOID CFG80211OS_UnRegister(VOID *pCB, VOID *pNetDevOrg)
 		}
 		kfree(pCfg80211_CB->pCfg80211_Wdev);
 
-		if (pCfg80211_CB->pCfg80211_Channels != NULL)
-			kfree(pCfg80211_CB->pCfg80211_Channels);
-
-		if (pCfg80211_CB->pCfg80211_Rates != NULL)
-			kfree(pCfg80211_CB->pCfg80211_Rates);
 
 		pCfg80211_CB->pCfg80211_Wdev = NULL;
 		pCfg80211_CB->pCfg80211_Channels = NULL;
@@ -225,6 +209,65 @@ VOID CFG80211OS_UnRegister(VOID *pCB, VOID *pNetDevOrg)
 }
 
 
+/* from mainline mt7601u driver */
+enum mt76_phy_type {
+        MT_PHY_TYPE_CCK,
+        MT_PHY_TYPE_OFDM,
+        MT_PHY_TYPE_HT,
+        MT_PHY_TYPE_HT_GF,
+};
+
+#define CHAN2G(_idx, _freq) {			\
+	.band = NL80211_BAND_2GHZ,		\
+	.center_freq = (_freq),			\
+	.hw_value = (_idx),			\
+	.max_power = 30,			\
+}
+
+static struct ieee80211_channel mt76_channels_2ghz[] = {
+	CHAN2G(1, 2412),
+	CHAN2G(2, 2417),
+	CHAN2G(3, 2422),
+	CHAN2G(4, 2427),
+	CHAN2G(5, 2432),
+	CHAN2G(6, 2437),
+	CHAN2G(7, 2442),
+	CHAN2G(8, 2447),
+	CHAN2G(9, 2452),
+	CHAN2G(10, 2457),
+	CHAN2G(11, 2462),
+	CHAN2G(12, 2467),
+	CHAN2G(13, 2472),
+	CHAN2G(14, 2484),
+};
+
+#define CCK_RATE(_idx, _rate) {					\
+	.bitrate = _rate,					\
+	.flags = IEEE80211_RATE_SHORT_PREAMBLE,			\
+	.hw_value = (MT_PHY_TYPE_CCK << 8) | _idx,		\
+	.hw_value_short = (MT_PHY_TYPE_CCK << 8) | (8 + _idx),	\
+}
+
+#define OFDM_RATE(_idx, _rate) {				\
+	.bitrate = _rate,					\
+	.hw_value = (MT_PHY_TYPE_OFDM << 8) | _idx,		\
+	.hw_value_short = (MT_PHY_TYPE_OFDM << 8) | _idx,	\
+}
+
+static struct ieee80211_rate mt76_rates[] = {
+	CCK_RATE(0, 10),
+	CCK_RATE(1, 20),
+	CCK_RATE(2, 55),
+	CCK_RATE(3, 110),
+	OFDM_RATE(0, 60),
+	OFDM_RATE(1, 90),
+	OFDM_RATE(2, 120),
+	OFDM_RATE(3, 180),
+	OFDM_RATE(4, 240),
+	OFDM_RATE(5, 360),
+	OFDM_RATE(6, 480),
+	OFDM_RATE(7, 540),
+};
 /*
 ========================================================================
 Routine Description:
@@ -273,48 +316,21 @@ BOOLEAN CFG80211_SupBandInit(
 	if (pChannelsOrg != NULL) pChannels=(struct ieee80211_channel *)pChannelsOrg;
 	if (pRatesOrg != NULL) pRates=(struct ieee80211_rate *)pRatesOrg;
 
-	/* sanity check */
-	if (pDriverBandInfo->RFICType == 0)
 		pDriverBandInfo->RFICType = RFIC_24GHZ;
 		
 	
 	/* 1. Calcute the Channel Number */
-	if (pDriverBandInfo->RFICType & RFIC_5GHZ)
-		NumOfChan = CFG80211_NUM_OF_CHAN_2GHZ + CFG80211_NUM_OF_CHAN_5GHZ;
-	else
-		NumOfChan = CFG80211_NUM_OF_CHAN_2GHZ;
+		NumOfChan = CFG80211_NUM_OF_CHAN_2GHZ; //14
 
 	/* 2. Calcute the Rate Number */
-	if (pDriverBandInfo->FlgIsBMode == TRUE)
-		NumOfRate = 4;
-	else
 		NumOfRate = 4 + 8;
 
 	CFG80211DBG(RT_DEBUG_ERROR, ("80211> RFICType= %d, NumOfChan= %d\n", pDriverBandInfo->RFICType, NumOfChan));
 	CFG80211DBG(RT_DEBUG_ERROR, ("80211> Number of rate = %d\n", NumOfRate));
 	
 	/* 3. Allocate the Channel instance */
-	if (pChannels == NULL && NumOfChan)
-	{
-		pChannels = kzalloc(sizeof(*pChannels) * NumOfChan, GFP_KERNEL);
-		if (!pChannels)
-		{
-			DBGPRINT(RT_DEBUG_ERROR, ("80211> ieee80211_channel allocation fail!\n"));
-			return FALSE;
-		}
-	}
 
 	/* 4. Allocate the Rate instance */
-	if (pRates == NULL && NumOfRate)
-	{
-		pRates = kzalloc(sizeof(*pRates) * NumOfRate, GFP_KERNEL);
-		if (!pRates)
-		{
-			os_free_mem(NULL, pChannels);
-			DBGPRINT(RT_DEBUG_ERROR, ("80211> ieee80211_rate allocation fail!\n"));
-			return FALSE;
-		}
-	}
 
 	/* get TX power */
 #ifdef SINGLE_SKU
@@ -326,71 +342,12 @@ BOOLEAN CFG80211_SupBandInit(
 	CFG80211DBG(RT_DEBUG_ERROR, ("80211> CurTxPower = %d dBm\n", CurTxPower));
 
 	/* 5. init channel */
-	for(IdLoop=0; IdLoop<NumOfChan; IdLoop++)
-	{
-
-#if (LINUX_VERSION_CODE >= KERNEL_VERSION(2,6,39))
-		if (IdLoop >= 14)
-		{
-			pChannels[IdLoop].band = KAL_BAND_5GHZ;
-			pChannels[IdLoop].center_freq = (UINT16)ieee80211_channel_to_frequency(Cfg80211_Chan[IdLoop], KAL_BAND_5GHZ);
-		}
-		else
-		{
-			pChannels[IdLoop].band = KAL_BAND_2GHZ;
-			pChannels[IdLoop].center_freq = (UINT16)ieee80211_channel_to_frequency(Cfg80211_Chan[IdLoop], KAL_BAND_2GHZ);
-		}
-#else
-		pChannels[IdLoop].center_freq = ieee80211_channel_to_frequency(Cfg80211_Chan[IdLoop]);
-#endif
-		pChannels[IdLoop].hw_value = (UINT16)IdLoop;
-
-		if (IdLoop < CFG80211_NUM_OF_CHAN_2GHZ)
-			pChannels[IdLoop].max_power = CurTxPower;
-		else
-			pChannels[IdLoop].max_power = CurTxPower;
-
-		pChannels[IdLoop].max_antenna_gain = 0xff;
-
-		/* if (RadarChannelCheck(pAd, Cfg80211_Chan[IdLoop])) */
-		if (IsRadarChannel(Cfg80211_Chan[IdLoop]))
-		{
-			pChannels[IdLoop].flags = 0;
-			CFG80211DBG(RT_DEBUG_TRACE, ("====> Rader Channel %d\n", Cfg80211_Chan[IdLoop]));
-			pChannels[IdLoop].flags |= (IEEE80211_CHAN_RADAR
-#if (KERNEL_VERSION(3, 14, 0) <= LINUX_VERSION_CODE)
-			| IEEE80211_CHAN_NO_IR
-#else
-			| IEEE80211_CHAN_PASSIVE_SCAN
-#endif
-			);
-		}
-/*		CFG_TODO:
-		pChannels[IdLoop].flags
-		enum ieee80211_channel_flags {
-			IEEE80211_CHAN_DISABLED		= 1<<0,
-			IEEE80211_CHAN_PASSIVE_SCAN	= 1<<1,
-			IEEE80211_CHAN_NO_IBSS		= 1<<2,
-			IEEE80211_CHAN_RADAR		= 1<<3,
-			IEEE80211_CHAN_NO_HT40PLUS	= 1<<4,
-			IEEE80211_CHAN_NO_HT40MINUS	= 1<<5,
-		};		
- */		
-	}
+	pChannels=mt76_channels_2ghz;
 
 	/* 6. init rate */
+	pRates=mt76_rates;
 	for(IdLoop=0; IdLoop<NumOfRate; IdLoop++)
 		memcpy(&pRates[IdLoop], &Cfg80211_SupRate[IdLoop], sizeof(*pRates));
-	
-/*		CFG_TODO:
-		enum ieee80211_rate_flags {
-			IEEE80211_RATE_SHORT_PREAMBLE	= 1<<0,
-			IEEE80211_RATE_MANDATORY_A	= 1<<1,
-			IEEE80211_RATE_MANDATORY_B	= 1<<2,
-			IEEE80211_RATE_MANDATORY_G	= 1<<3,
-			IEEE80211_RATE_ERP_G		= 1<<4,
-		};
- */	
 
 	/* 7. Fill the Band 2.4GHz */
 	pBand = &pCfg80211_CB->Cfg80211_bands[KAL_BAND_2GHZ];
@@ -452,58 +409,9 @@ BOOLEAN CFG80211_SupBandInit(
 
 	/* 8. Fill the Band 5GHz */
 	pBand = &pCfg80211_CB->Cfg80211_bands[KAL_BAND_5GHZ];
-	if (pDriverBandInfo->RFICType & RFIC_5GHZ)
-	{
-		pBand->n_channels = CFG80211_NUM_OF_CHAN_5GHZ;
-		pBand->n_bitrates = NumOfRate - 4; 	/*Disable 11B rate*/
-		pBand->channels = &pChannels[CFG80211_NUM_OF_CHAN_2GHZ];
-		pBand->bitrates = &pRates[4];
-
-#ifdef DOT11_N_SUPPORT
-		/* for HT, assign pBand->ht_cap */
-		pBand->ht_cap.ht_supported = true;
-		pBand->ht_cap.cap = IEEE80211_HT_CAP_SUP_WIDTH_20_40 |
-					        IEEE80211_HT_CAP_SM_PS |
-					        IEEE80211_HT_CAP_SGI_40 |
-					        IEEE80211_HT_CAP_DSSSCCK40;
-		pBand->ht_cap.ampdu_factor = IEEE80211_HT_MAX_AMPDU_64K; /* 2 ^ 16 */
-		pBand->ht_cap.ampdu_density = pDriverBandInfo->MpduDensity; /* YF_TODO */
-
-		memset(&pBand->ht_cap.mcs, 0, sizeof(pBand->ht_cap.mcs));
-		switch(pDriverBandInfo->RxStream)
-		{
-			case 1:
-			default:
-				pBand->ht_cap.mcs.rx_mask[0] = 0xff;
-				pBand->ht_cap.mcs.rx_highest = cpu_to_le16(150);
-				break;
-
-			case 2:
-				pBand->ht_cap.mcs.rx_mask[0] = 0xff;
-				pBand->ht_cap.mcs.rx_mask[1] = 0xff;
-				pBand->ht_cap.mcs.rx_highest = cpu_to_le16(300);
-				break;
-
-			case 3:
-				pBand->ht_cap.mcs.rx_mask[0] = 0xff;
-				pBand->ht_cap.mcs.rx_mask[1] = 0xff;
-				pBand->ht_cap.mcs.rx_mask[2] = 0xff;
-				pBand->ht_cap.mcs.rx_highest = cpu_to_le16(450);
-				break;
-		}
-		
-		pBand->ht_cap.mcs.rx_mask[4] = 0x01; /* 40MHz*/
-		pBand->ht_cap.mcs.tx_params = IEEE80211_HT_MCS_TX_DEFINED;
-#endif /* DOT11_N_SUPPORT */
-
-		pWiphy->bands[KAL_BAND_5GHZ] = pBand;
-	}
-	else
-	{
 		pWiphy->bands[KAL_BAND_5GHZ] = NULL;
 		pBand->channels = NULL;
 		pBand->bitrates = NULL;
-	}
 
 	/* 9. re-assign to mainDevice info */
 	pCfg80211_CB->pCfg80211_Channels = pChannels;
