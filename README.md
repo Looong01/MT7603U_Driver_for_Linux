@@ -43,3 +43,14 @@ service  NetworkManager restart
 
 use Makefile.backports as Makefile
 
+
+### Disable Dark Mode
+
+This driver enabled Dark Mode as default.
+
+A way to disabled it
+
+```
+sed -i '1s/#define/\/\/#define/g'  common/rtusb_dev_id.c
+```
+
