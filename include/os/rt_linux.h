@@ -402,6 +402,12 @@ struct iw_statistics *rt28xx_get_wireless_stats(
  ***********************************************************************************/
 typedef struct file* RTMP_OS_FD;
 
+#if LINUX_VERSION_CODE >= KERNEL_VERSION(5,19,0)
+typedef struct {
+	unsigned long seg;
+} mm_segment_t;
+#endif
+
 typedef struct _OS_FS_INFO_
 {
 	int				fsuid;
