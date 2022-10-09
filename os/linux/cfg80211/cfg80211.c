@@ -2880,7 +2880,11 @@ static int CFG80211_OpsChangeBeacon(
 
 static int CFG80211_OpsStopAp(
 	struct wiphy *pWiphy,
+#if (LINUX_VERSION_CODE >= KERNEL_VERSION(5,19, 2))
+	struct net_device *netdev, unsigned int link_id)
+#else
 	struct net_device *netdev)
+#endif
 {
 	VOID *pAd;
 	MAC80211_PAD_GET(pAd, pWiphy);

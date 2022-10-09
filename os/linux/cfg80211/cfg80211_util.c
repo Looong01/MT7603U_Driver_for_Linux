@@ -1106,8 +1106,13 @@ VOID CFG80211OS_Roamed(
 #endif
 #if (LINUX_VERSION_CODE >= KERNEL_VERSION(4,12,0))
 
+#if (LINUX_VERSION_CODE >= KERNEL_VERSION(6, 0, 0))
+		roam_info.links[0].channel = NULL;/* CFG TODO: ieee80211_channel */
+		roam_info.links[0].bssid = pBSSID;
+#else
 		roam_info.channel = NULL;/* CFG TODO: ieee80211_channel */
 		roam_info.bssid = pBSSID;
+#endif
 		roam_info.req_ie =
 			pReqIe;
 		roam_info.req_ie_len =
