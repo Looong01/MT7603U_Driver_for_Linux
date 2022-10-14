@@ -1301,6 +1301,9 @@ Note:
 static int CFG80211_OpsKeyAdd(
 	IN struct wiphy						*pWiphy,
 	IN struct net_device				*pNdev,
+#if (LINUX_VERSION_CODE >= KERNEL_VERSION(6, 1, 0))
+	IN int						link_id,
+#endif
 	IN UINT8							KeyIdx,
 	IN bool								Pairwise,
 	IN const UINT8						*pMacAddr,
@@ -1446,6 +1449,9 @@ Note:
 static int CFG80211_OpsKeyGet(
 	IN struct wiphy						*pWiphy,
 	IN struct net_device				*pNdev,
+#if (LINUX_VERSION_CODE >= KERNEL_VERSION(6, 1, 0))
+	IN int						link_id,
+#endif
 	IN UINT8							KeyIdx,
 	IN bool								Pairwise,
 	IN const UINT8						*pMacAddr,
@@ -1493,6 +1499,9 @@ Note:
 static int CFG80211_OpsKeyDel(
 	IN struct wiphy						*pWiphy,
 	IN struct net_device				*pNdev,
+#if (LINUX_VERSION_CODE >= KERNEL_VERSION(6, 1, 0))
+	IN int						link_id,
+#endif
 	IN UINT8							KeyIdx,
 	IN bool								Pairwise,
 	IN const UINT8						*pMacAddr)
@@ -1572,6 +1581,9 @@ Note:
 static int CFG80211_OpsKeyDefaultSet(
 	IN struct wiphy						*pWiphy,
 	IN struct net_device				*pNdev,
+#if (LINUX_VERSION_CODE >= KERNEL_VERSION(6, 1, 0))
+	IN int						link_id,
+#endif
 	IN UINT8							KeyIdx,
 	IN bool								Unicast,
 	IN bool								Multicast)
@@ -1626,6 +1638,9 @@ Note:
 static int CFG80211_OpsMgmtKeyDefaultSet(
 	IN struct wiphy						*pWiphy,
 	IN struct net_device				*pNdev,
+#if (LINUX_VERSION_CODE >= KERNEL_VERSION(6, 1, 0))
+	IN int						link_id,
+#endif
 	IN UINT8							KeyIdx)
 {
 	VOID *pAd;
