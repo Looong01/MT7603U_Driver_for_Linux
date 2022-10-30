@@ -39,6 +39,9 @@ OSABL = NO
 #Build Prealloc ko
 PREALLOC = YES
 
+#Creating Fantasies - YES or NO
+DARK_MODE = YES
+
 #ifneq ($(TARGET),THREADX)
 #RT28xx_DIR = home directory of RT28xx source code
 #RT28xx_DIR ?= /mnt/nfsroot/rongjun.chen/l-amlogic/hardware/wifi/mtk/drivers/mt7603
@@ -241,6 +244,10 @@ ifeq ($(PLATFORM),FREESCALE8377)
 	$(MAKE) ARCH=powerpc CROSS_COMPILE=$(CROSS_COMPILE) -C  $(LINUX_SRC) SUBDIRS=$(RT28xx_DIR)/os/linux modules
 else
 #build mt7603usta.ko
+ifeq ($(DARK_MODE),NO)
+	echo "Dark mode disabled"
+	sed -i '1s/#define/\/\/#define/g'  common/rtusb_dev_id.c
+endif
 	$(MAKE) ARCH=$(ARCH) CROSS_COMPILE=$(CROSS_COMPILE) -C $(LINUX_SRC) M=$(RT28xx_DIR)/os/linux modules
 #	$(CROSS_COMPILE)strip --strip-debug $(RT28xx_DIR)/os/linux/mt7603usta.ko
 endif
