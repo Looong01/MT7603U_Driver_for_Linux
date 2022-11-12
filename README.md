@@ -33,6 +33,13 @@ sudo depmod -a
 sudo modprobe mt7603usta
 ```
 
+load compiled driver (for reference)
+
+```
+sudo modprobe cfg80211
+sudo insmod os/linux/mt7603usta.ko mac=XX:XX:XX:XX:XX:XX
+```
+
 and , maybe also need
 
 ```
@@ -54,3 +61,9 @@ A way to disabled it
 sed -i '1s/#define/\/\/#define/g'  common/rtusb_dev_id.c
 ```
 
+Or use a more easy way when compile
+
+```
+make KSRC=/lib/modules/$(uname -r)/build  DARK_MODE=NO
+```
+ 
