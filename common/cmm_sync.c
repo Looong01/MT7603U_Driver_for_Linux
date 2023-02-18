@@ -136,6 +136,10 @@ VOID BuildChannelList(RTMP_ADAPTER *pAd)
 				pAd->ChannelList[index+i].MaxTxPwr = 20;
 			}
 
+
+//fill channel 1 Flags to channel 14
+	pAd->ChannelList[13].Flags = pAd->ChannelList[0].Flags;
+
 			index += num;
 
 			os_free_mem(NULL, pChannelList);
