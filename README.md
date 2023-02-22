@@ -60,6 +60,9 @@ lb-link BL-M7603NU1
 
 use Makefile.backports as Makefile
 
+after compile and load the `mt7603usta.ko`, the netifd script will not work in OpenWRT.
+
+So, to start an AP, need to make a config file like `hostapd.conf`, then using hostapd command manually.
 
 ### Disable Dark Mode
 
