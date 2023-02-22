@@ -46,6 +46,16 @@ and , maybe also need
 service  NetworkManager restart
 ```
 
+### Should Supported Hardware (NOT TEST)
+
+```
+ogemray GWF-1D07
+ogemray GWF-1M02
+comfast CF-WU825N V2
+lb-link BL-WN620A(7603)
+lb-link BL-M7603NU1
+```
+
 ### Build for OpenWRT
 
 use Makefile.backports as Makefile
