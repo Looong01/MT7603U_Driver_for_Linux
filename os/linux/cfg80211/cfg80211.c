@@ -3683,6 +3683,10 @@ BOOLEAN CFG80211_Register(
 		return FALSE;
 	} 
 
+
+//Fix the CONFIG_NET_NS, support for network namespaces
+	dev_net_set(pNetDev ,  wiphy_net( pCfg80211_CB->pCfg80211_Wdev->wiphy )  );
+
 	/* bind wireless device with net device */
 #ifdef CONFIG_AP_SUPPORT
 	/* default we are AP mode */
