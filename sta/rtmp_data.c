@@ -1485,7 +1485,8 @@ VOID STA_AMPDU_Frame_Tx(RTMP_ADAPTER *pAd, TX_BLK *pTxBlk)
 		NdisZeroMemory((UCHAR *)(&tr_entry->CachedBuf[0]), sizeof(tr_entry->CachedBuf));
 		NdisMoveMemory((UCHAR *)(&tr_entry->CachedBuf[0]), 
 						(UCHAR *)(&pTxBlk->HeaderBuf[0]), 
-						cache_sz);
+						//cache_sz
+						sizeof (UCHAR *) );
 
 #ifdef VENDOR_FEATURE1_SUPPORT
 		/* use space to get performance enhancement */
