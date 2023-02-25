@@ -1689,7 +1689,11 @@ int RtmpOSNetDevAddrSet(
 #endif /* CONFIG_STA_SUPPORT */
 
 	//dev_addr_set(net_dev, pMacAddr);
+#if (LINUX_VERSION_CODE >= KERNEL_VERSION(5, 15, 0))
+	eth_hw_addr_set(net_dev, pMacAddr);
+#else
 	NdisMoveMemory((void *)net_dev->dev_addr, pMacAddr, 6);
+#endif
 
 	return 0;
 }
@@ -2019,8 +2023,12 @@ int RtmpOSNetDevAttach(
 #endif /* CONFIG_WIRELESS_EXT */
 		/* copy the net device mac address to the net_device structure. */
 		//dev_addr_set(pNetDev, &pDevOpHook->devAddr[0]);
+#if (LINUX_VERSION_CODE >= KERNEL_VERSION(5, 15, 0))
+		eth_hw_addr_set(pNetDev, &pDevOpHook->devAddr[0]);
+#else
 		NdisMoveMemory((void *)pNetDev->dev_addr, &pDevOpHook->devAddr[0],
 			       MAC_ADDR_LEN);
+#endif
 
 		rtnl_locked = pDevOpHook->needProtcted;
 	}

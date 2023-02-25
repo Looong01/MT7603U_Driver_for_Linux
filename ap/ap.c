@@ -805,8 +805,12 @@ VOID APStartUp(RTMP_ADAPTER *pAd)
 		if (wdev->if_dev)
 		{
 			//dev_addr_set(wdev->if_dev, wdev->if_addr);
+#if (LINUX_VERSION_CODE >= KERNEL_VERSION(5, 15, 0))
+			eth_hw_addr_set(wdev->if_dev, wdev->if_addr);
+#else
 			NdisMoveMemory((void *)RTMP_OS_NETDEV_GET_PHYADDR(wdev->if_dev),
 								wdev->if_addr, MAC_ADDR_LEN);
+#endif
 		}
 		COPY_MAC_ADDR(wdev->bssid, wdev->if_addr);
 
