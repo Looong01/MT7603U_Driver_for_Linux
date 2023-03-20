@@ -2354,9 +2354,7 @@ static NDIS_STATUS AndesMTLoadFwMethod1(RTMP_ADAPTER *ad)
 	UINT32 value, loop, dl_len;
 	UINT32 ret = 0;
 	RTMP_CHIP_CAP *cap = &ad->chipCap;
-#ifdef RTMP_PCI_SUPPORT
 	POS_COOKIE obj = (POS_COOKIE)ad->OS_Cookie;
-#endif /* RTMP_PCI_SUPPORT */
 	struct MCU_CTRL *Ctl = &ad->MCUCtrl;
 #ifdef RTMP_PCI_SUPPORT
 	UINT32 RemapBase, RemapOffset;
@@ -2365,6 +2363,7 @@ static NDIS_STATUS AndesMTLoadFwMethod1(RTMP_ADAPTER *ad)
 
 	if (cap->load_code_method == BIN_FILE_METHOD) {
 		DBGPRINT(RT_DEBUG_OFF, ("load fw image from /lib/firmware/%s\n", cap->fw_bin_file_name));
+		OS_LOAD_CODE_FROM_BIN(&cap->FWImageName, cap->fw_bin_file_name, obj->pUsb_Dev, &cap->fw_len);
 #ifdef RTMP_PCI_SUPPORT
 		OS_LOAD_CODE_FROM_BIN(&cap->FWImageName, cap->fw_bin_file_name, obj->pci_dev, &cap->fw_len);
 #endif
@@ -2544,13 +2543,12 @@ static NDIS_STATUS AndesMTLoadFwMethod2(RTMP_ADAPTER *ad)
 	UINT32 ilm_target_addr, dlm_target_addr;
 	UINT32 ret = 0;
 	RTMP_CHIP_CAP *cap = &ad->chipCap;
-#ifdef RTMP_PCI_SUPPORT
 	POS_COOKIE obj = (POS_COOKIE)ad->OS_Cookie;
-#endif /* RTMP_PCI_SUPPORT */
 	struct MCU_CTRL *Ctl = &ad->MCUCtrl;
 
 	if (cap->load_code_method == BIN_FILE_METHOD) {
 		DBGPRINT(RT_DEBUG_OFF, ("load fw image from /lib/firmware/%s\n", cap->fw_bin_file_name));
+		OS_LOAD_CODE_FROM_BIN(&cap->FWImageName, cap->fw_bin_file_name, obj->pUsb_Dev, &cap->fw_len);
 #ifdef RTMP_PCI_SUPPORT
 		OS_LOAD_CODE_FROM_BIN(&cap->FWImageName, cap->fw_bin_file_name, obj->pci_dev, &cap->fw_len);
 #endif

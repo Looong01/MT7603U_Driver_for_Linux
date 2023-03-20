@@ -1259,6 +1259,7 @@ static const RTMP_CHIP_CAP MT7603_ChipCap = {
 	.fw_header_image = MT7603_FirmwareImage,
 	.fw_bin_file_name = "mtk/MT7603.bin",
 	.fw_len = sizeof(MT7603_FirmwareImage),
+	.load_code_method = BIN_FILE_METHOD,
 #ifdef CARRIER_DETECTION_SUPPORT
 	.carrier_func = TONE_RADAR_V2,
 #endif
@@ -1356,14 +1357,14 @@ VOID mt7603_init(RTMP_ADAPTER *pAd)
 
 	if (MTK_REV_GTE(pAd, MT7603, MT7603E1) && MTK_REV_LT(pAd, MT7603, MT7603E2)) {
 		pChipCap->fw_header_image = MT7603_FirmwareImage;
-		pChipCap->fw_bin_file_name = "mtk/MT7603.bin";
+		pChipCap->fw_bin_file_name = "mt7603_e1.bin";
 		pChipCap->fw_len = sizeof(MT7603_FirmwareImage);
 
 	}
 	else if(MTK_REV_GTE(pAd, MT7603, MT7603E2))
 	{
 		pChipCap->fw_header_image = MT7603_e2_FirmwareImage;
-		pChipCap->fw_bin_file_name = "mtk/MT7603_e2.bin";
+		pChipCap->fw_bin_file_name = "mt7603_e2.bin";
 		pChipCap->fw_len = sizeof(MT7603_e2_FirmwareImage);
 	}
 
