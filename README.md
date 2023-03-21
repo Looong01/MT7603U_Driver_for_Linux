@@ -23,6 +23,8 @@ more USB ID can be add to `common/rtusb_dev_id.c`
 
 place `conf/MT7603USTA.dat` to `/lib/firmware/MT7603USTA.dat`
 
+get firmware `mt7603_e1.bin`,`mt7603_e2.bin` from [OpenWRT mt76 repo](https://github.com/openwrt/mt76/tree/master/firmware) and place to `/lib/firmware/mt7603_e1.bin` and `/lib/firmware/mt7603_e2.bin`
+
 ```
 git clone https://gitlab.com/ChalesYu/buildroot_platform_hardware_wifi_mtk_drivers_mt7603.git
 cd buildroot_platform_hardware_wifi_mtk_drivers_mt7603/
