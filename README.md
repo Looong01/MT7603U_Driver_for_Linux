@@ -64,6 +64,7 @@ ogemray GWF-1M02
 comfast CF-WU825N V2
 lb-link BL-WN620A(7603)
 lb-link BL-M7603NU1
+mercury MW300UM V4
 ```
 
 ### Build for OpenWRT
