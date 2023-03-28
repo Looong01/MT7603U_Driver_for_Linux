@@ -551,7 +551,7 @@ INT NICReadEEPROMParameters(RTMP_ADAPTER *pAd, RTMP_STRING *mac_addr)
 	RT28xx_EEPROM_READ16(pAd, 0x6, Value23);
 	RT28xx_EEPROM_READ16(pAd, 0x8, Value45);
 
-	DBGPRINT(RT_DEBUG_TRACE, ("Initialize MAC Address from EEPROM!\n"));
+	DBGPRINT(RT_DEBUG_OFF, ("Initialize MAC Address from EEPROM!\n"));
 	pAd->PermanentAddress[0] = (UCHAR)(Value01 & 0xff);
 	pAd->PermanentAddress[1] = (UCHAR)(Value01 >> 8);
 	pAd->PermanentAddress[2] = (UCHAR)(Value23 & 0xff);
@@ -559,8 +559,19 @@ INT NICReadEEPROMParameters(RTMP_ADAPTER *pAd, RTMP_STRING *mac_addr)
 	pAd->PermanentAddress[4] = (UCHAR)(Value45 & 0xff);
 	pAd->PermanentAddress[5] = (UCHAR)(Value45 >> 8);
 
-	DBGPRINT(RT_DEBUG_TRACE, ("E2PROM MAC: =%02x:%02x:%02x:%02x:%02x:%02x\n",
+	DBGPRINT(RT_DEBUG_OFF, ("E2PROM MAC: =%02x:%02x:%02x:%02x:%02x:%02x\n",
 								PRINT_MAC(pAd->PermanentAddress)));
+	DBGPRINT(RT_DEBUG_OFF, ("RTMP_STRING *mac_addr =%02x:%02x:%02x:%02x:%02x:%02x\n",
+								PRINT_MAC(mac_addr)));
+
+	if ( (pAd->CurrentAddress[0] != 0x0) &&
+		 (pAd->CurrentAddress[1] != 0x0) &&
+		 (pAd->CurrentAddress[2] != 0x0)
+	) //check if this pointer already have mac address
+	{
+		DBGPRINT(RT_DEBUG_OFF, ("looks like pAd->CurrentAddress has a MAC Address , skip assign again!\n"));
+		goto copy_mac_over;
+	};
 
 	/* Assign the actually working MAC Address */
 	if (pAd->bLocalAdminMAC)
@@ -587,13 +598,25 @@ INT NICReadEEPROMParameters(RTMP_ADAPTER *pAd, RTMP_STRING *mac_addr)
 			macptr=macptr+3;
 		}
 
-		DBGPRINT(RT_DEBUG_TRACE, ("Use the MAC address what is assigned from Moudle Parameter. \n"));
+		DBGPRINT(RT_DEBUG_OFF, ("Use the MAC address what is assigned from Moudle Parameter. \n"));
+	}
+	else if (mac_addr &&
+			 strlen((RTMP_STRING *)mac_addr) == 6 &&   //Add for Random MacAddr
+			 (strcmp(mac_addr, "00:00:00:00:00:00") != 0))
+	{
+
+		COPY_MAC_ADDR(pAd->CurrentAddress, mac_addr );
+		DBGPRINT(RT_DEBUG_OFF, ("Use the MAC address what is assigned from Random Addr. \n"));
 	}
 	else
 	{
 		COPY_MAC_ADDR(pAd->CurrentAddress, pAd->PermanentAddress);
-		DBGPRINT(RT_DEBUG_TRACE, ("Use the MAC address what is assigned from EEPROM. \n"));
+		DBGPRINT(RT_DEBUG_OFF, ("Use the MAC address what is assigned from EEPROM. \n"));
 	}
+
+copy_mac_over:
+	DBGPRINT(RT_DEBUG_OFF, ("==> pAd->CurrentAddress MAC: =%02x:%02x:%02x:%02x:%02x:%02x\n",
+								PRINT_MAC(pAd->CurrentAddress)));
 
 	/*Send EEprom parameter to FW*/
 #ifdef CONFIG_ATE

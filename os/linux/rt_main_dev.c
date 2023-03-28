@@ -1,3 +1,4 @@
+#define USE_RAMDOM_MACADDR
 /*
  ***************************************************************************
  * Ralink Tech Inc.
@@ -261,6 +262,9 @@ int rt28xx_open(VOID *dev)
 	VOID *pAd = NULL;
 	int retval = 0;
 	ULONG OpMode;
+#ifdef USE_RAMDOM_MACADDR
+	static u8 MacAddress[6];
+#endif
 
 	if (sizeof(ra_dma_addr_t) < sizeof(dma_addr_t))
 		DBGPRINT(RT_DEBUG_ERROR, ("Fatal error for DMA address size!!!\n"));
@@ -308,6 +312,13 @@ int rt28xx_open(VOID *dev)
 	RTMP_DRIVER_IRQ_INIT(pAd);
 
 	/* Chip & other init */
+#ifdef USE_RAMDOM_MACADDR
+	DBGPRINT(RT_DEBUG_OFF, ("using a Random macaddr. \n"));
+	eth_random_addr(MacAddress);
+	mac = (RTMP_STRING *)MacAddress;
+	DBGPRINT(RT_DEBUG_OFF, ("Random MAC will change to: =%02x:%02x:%02x:%02x:%02x:%02x\n",
+								PRINT_MAC(mac)));
+#endif
 	if (rt28xx_init(pAd, mac, hostname) == FALSE)
 		goto err;
 
