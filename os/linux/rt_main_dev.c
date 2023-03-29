@@ -313,11 +313,18 @@ int rt28xx_open(VOID *dev)
 
 	/* Chip & other init */
 #ifdef USE_RAMDOM_MACADDR
-	DBGPRINT(RT_DEBUG_OFF, ("using a Random macaddr. \n"));
-	eth_random_addr(MacAddress);
-	mac = (RTMP_STRING *)MacAddress;
-	DBGPRINT(RT_DEBUG_OFF, ("Random MAC will change to: =%02x:%02x:%02x:%02x:%02x:%02x\n",
-								PRINT_MAC(mac)));
+	if (mac &&
+	 strlen((RTMP_STRING *)mac) == 17 &&
+	 (strcmp(mac, "00:00:00:00:00:00") != 0))
+	{
+		DBGPRINT(RT_DEBUG_OFF, ("using module_param mac (insmod mac=XX:XX:XX:XX:XX:XX). \n"));
+	} else {
+		DBGPRINT(RT_DEBUG_OFF, ("using a Random macaddr. \n"));
+		eth_random_addr(MacAddress);
+		mac = (RTMP_STRING *)MacAddress;
+		DBGPRINT(RT_DEBUG_OFF, ("Random MAC will change to: =%02x:%02x:%02x:%02x:%02x:%02x\n",
+									PRINT_MAC(mac)));
+	};
 #endif
 	if (rt28xx_init(pAd, mac, hostname) == FALSE)
 		goto err;
