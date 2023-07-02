@@ -29,7 +29,9 @@ install linux-header
 
 more USB ID can be add to `common/rtusb_dev_id.c`
 
-place `conf/MT7603USTA.dat` to `/lib/firmware/MT7603USTA.dat`
+place `mt7603_firmware/MT7603USTA.dat` to `/lib/firmware/MT7603USTA.dat`
+
+place `mt7603_firmware/mt7603_e2.bin` to `/lib/firmware/mt7603_e2.bin`
 
 get firmware `mt7603_e1.bin`,`mt7603_e2.bin` from [OpenWRT mt76 repo](https://github.com/openwrt/mt76/tree/master/firmware) and place to `/lib/firmware/mt7603_e1.bin` and `/lib/firmware/mt7603_e2.bin`
 
@@ -38,6 +40,8 @@ git clone https://gitlab.com/ChalesYu/buildroot_platform_hardware_wifi_mtk_drive
 cd buildroot_platform_hardware_wifi_mtk_drivers_mt7603/
 git checkout pub-test-v20220304
 make KSRC=/lib/modules/$(uname -r)/build -j2
+sudo cp mt7603_firmware/MT7603USTA.dat /lib/firmware/
+sudo cp mt7603_firmware/mt7603_e2.bin /lib/firmware/
 sudo cp os/linux/mt7603usta.ko /lib/modules/$(uname -r)/kernel/drivers/net/wireless/
 sudo depmod -a
 sudo modprobe mt7603usta
@@ -74,6 +78,20 @@ use Makefile.backports as Makefile
 after compile and load the `mt7603usta.ko`, the netifd script will not work in OpenWRT.
 
 So, to start an AP, need to make a config file like `hostapd.conf`, then using hostapd command manually.
+
+
+### Test New USB Device ID
+
+If a USB device is based on mt7603u and device id is `0E8D:0DDF` .
+
+After insmod mt7603usta.ko , need to :
+
+```
+echo 0E8D 0DDF > /sys/bus/usb/drivers/mt_drv/new_id
+```
+
+to make driver actually load and work.
+
 
 ### Disable Dark Mode
 
