@@ -1,0 +1,194 @@
+# MT7603U linux driver
+
+# If KERNELRELEASE is defined, we've been invoked from the
+# kernel build system and can use its language.
+ifneq ($(KERNELRELEASE),)
+	#subdir-ccflags-y can be used in 2.6.34 in the future
+	#subdir-ccflags-y += -I$(src)/common/include -I$(src)/common/linux/include 
+
+	ccflags-y += \
+			-Wall -Wstrict-prototypes -Wno-trigraphs \
+			-DAGGREGATION_SUPPORT -DPIGGYBACK_SUPPORT -DWMM_SUPPORT \
+			-DLINUX -DENHANCED_STAT_DISPLAY -DSYSTEM_LOG_SUPPORT \
+			-DRT28xx_MODE=STA -DCHIPSET=mt7603u \
+			-DRESOURCE_PRE_ALLOC  -DCONFIG_RA_NAT_NONE \
+			-DPREALLOC -DUSB_BULK_BUF_ALIGMENT -DUSB_BULK_BUF_PREALLOC \
+			-DCONFIG_COB_SOLUTION_SUPPORT -DCONFIG_ATE \
+			-DCONFIG_RT2880_ATE_CMD_NEW \
+			-DCAL_FREE_IC_SUPPORT -DUAPSD_SUPPORT \
+			-DCONFIG_STA_SUPPORT -DSCAN_SUPPORT \
+			-DDBG -DADHOC_WPA2PSK_SUPPORT -DDOT11_N_SUPPORT -DSTATS_COUNT_SUPPORT \
+			-DRT_CFG80211_SUPPORT -DCFG80211_BUILD_CHANNEL_LIST \
+			-DWPA_SUPPLICANT_SUPPORT -DRT_CFG80211_P2P_SUPPORT \
+			-DMBSS_SUPPORT -DAP_SCAN_SUPPORT  \
+			-DCONFIG_AP_SUPPORT -DAPCLI_SUPPORT -DUAPSD_SUPPORT \
+			-DRT_CFG80211_P2P_CONCURRENT_DEVICE -DCFG_TDLS_SUPPORT \
+			-DUAPSD_SUPPORT -DMT_WOW_SUPPORT -DRELEASE_EXCLUDE \
+			-DDOT11W_PMF_SUPPORT -DSOFT_ENCRYPT \
+			-DCONFIG_CALIBRATION_COLLECTION \
+			-DMT7603 -DMT_BBP -DMT_RF -DRTMP_RF_RW_SUPPORT -DMT_MAC \
+			-DRTMP_MAC_USB -DRTMP_USB_SUPPORT \
+			-DMCS_LUT_SUPPORT -DRTMP_TIMER_TASK_SUPPORT -DRTMP_EFUSE_SUPPORT \
+			-DBUF_ALIGMENT_RINGSIZE=2 -DSTA_LP_PHASE_1_SUPPORT \
+			-DCONFIG_ANDES_SUPPORT -DNEW_RATE_ADAPT_SUPPORT -DBCN_OFFLOAD_SUPPORT \
+			-DUSE_BMC -DRTMP_WLAN_HOOK_SUPPORT \
+			-DCONFIG_FPGA_MODE -DRELEASE_EXCLUDE \
+			-DIP_ASSEMBLY -DBLOCK_NET_IF -DLLTD_SUPPORT
+
+	ccflags-y += -DLED_CONTROL_SUPPORT
+	ccflags-y += -DLED_CONTROL_METHOD_1
+	ccflags-y += -I$(src)/include  -I$(src)/ate/include -I$(LINUX_SRC)/include -I$(LINUX_SRC)/arch/$(ARCH)/include
+
+   # obj-y += common/
+   # obj-m += drv_wlan/MT6632/
+	obj-m := mt7603usta.o
+
+	mt7603usta-objs	:=
+	mt7603usta-objs	+= \
+		sta/assoc.o \
+		sta/auth.o \
+		sta/auth_rsp.o \
+		sta/sync.o \
+		sta/sanity.o \
+		sta/rtmp_data.o \
+		sta/connect.o \
+		sta/wpa.o \
+		sta/sta_cfg.o \
+		sta/adhoc.o \
+		sta/sta.o \
+		ap/ap_apcli.o \
+		ap/apcli_ctrl.o \
+		ap/apcli_sync.o \
+		ap/apcli_auth.o \
+		ap/apcli_assoc.o \
+		ap/ap_apcli_inf.o \
+		ap/ap_mbss.o \
+		ap/ap.o \
+		ap/ap_assoc.o \
+		ap/ap_auth.o \
+		ap/ap_connect.o \
+		ap/ap_mlme.o \
+		ap/ap_sanity.o \
+		ap/ap_sync.o \
+		ap/ap_wpa.o \
+		ap/ap_data.o \
+		ap/ap_autoChSel.o \
+		ap/ap_qload.o \
+		ap/ap_cfg.o \
+		ap/ap_nps.o \
+		common/crypt_md5.o \
+		common/crypt_sha2.o \
+		common/crypt_hmac.o \
+		common/crypt_aes.o \
+		common/crypt_arc4.o \
+		common/mlme.o \
+		common/cmm_wep.o \
+		common/action.o \
+		common/cmm_data.o \
+		common/rtmp_init.o \
+		common/rtmp_init_inf.o \
+		common/cmm_tkip.o \
+		common/cmm_aes.o \
+		common/cmm_sync.o \
+		common/eeprom.o \
+		common/cmm_sanity.o \
+		common/cmm_info.o \
+		common/cmm_cfg.o \
+		common/cmm_wpa.o \
+		common/cmm_radar.o \
+		common/spectrum.o \
+		common/rtmp_timer.o \
+		common/rt_channel.o \
+		common/cmm_profile.o \
+		common/scan.o \
+		common/cmm_cmd.o \
+		common/ps.o \
+		common/sys_log.o \
+		common/txpower.o \
+		common/cmm_mac_usb.o \
+		common/mt_ps.o \
+		common/mt_io.o \
+		common/rtusb_data.o \
+		common/cmm_usb_io.o \
+		common/cmm_data_usb.o \
+		common/rtusb_bulk.o \
+		common/mtusb_io.o \
+		common/rtusb_dev_id.o \
+		common/uapsd.o \
+		common/netif_block.o \
+		common/rt_led.o \
+		common/pmf.o \
+		common/ba_action.o \
+		common/rt_os_util.o \
+		common/cmm_wpa_adhoc.o \
+		common/ee_efuse.o \
+		common/ee_prom.o \
+		rate_ctrl/ra_ctrl.o \
+		rate_ctrl/alg_legacy.o \
+		rate_ctrl/alg_ags.o \
+		rate_ctrl/alg_grp.o \
+		chips/rtmp_chip.o \
+		chips/mt7603.o \
+		mgmt/mgmt_hw.o \
+		mgmt/mgmt_entrytb.o \
+		mgmt/mgmt_ht.o \
+		tx_rx/wdev.o \
+		tx_rx/wdev_tx.o \
+		tx_rx/wdev_rx.o \
+		tx_rx/txs.o \
+		phy/phy.o \
+		phy/rf.o \
+		phy/mt_phy.o \
+		phy/mt_rf.o \
+		hw_ctrl/cmm_asic_mt.o \
+		hw_ctrl/cmm_chip_mt.o \
+		hw_ctrl/mt_gpio.o \
+		mac/mt_mac.o \
+		os/linux/cfg80211/cfg80211.o \
+		os/linux/cfg80211/cfg80211_util.o \
+		os/linux/cfg80211/cfg80211_scan.o \
+		os/linux/cfg80211/cfg80211_rx.o \
+		os/linux/cfg80211/cfg80211_tx.o \
+		os/linux/cfg80211/cfg80211_inf.o \
+		os/linux/cfg80211/cfg80211_p2p.o \
+		os/linux/cfg80211/cfg80211_ap.o \
+		os/linux/cfg80211/cfg80211drv.o \
+		os/linux/cfg80211/cfg80211_tdls.o \
+		os/linux/ap_ioctl.o \
+		os/linux/prealloc.o \
+		os/linux/sta_ioctl.o \
+		os/linux/rt_linux.o \
+		os/linux/rt_txrx_hook.o \
+		os/linux/rt_main_dev.o \
+		os/linux/rt_usb_util.o \
+		os/linux/usb_main_dev.o \
+		os/linux/rt_usb.o \
+		os/linux/rt_profile.o \
+		mcu/mcu.o \
+		mcu/andes_core.o \
+		mcu/andes_mt.o \
+		ate/mt_mac/mt_ate.o \
+		ate/inf/ate_usb.o \
+		ate/ate_agent.o
+
+    obj-n := dummy.o
+	#skip bt hci driver
+	#obj-y	+= drv_bt/
+
+# Otherwise we were called directly from the command
+# line; invoke the kernel build system.
+else
+    KSRC ?= /lib/modules/$(shell uname -r)/build
+    KERNELDIR := $(KSRC)
+    PWD  := $(shell pwd)
+default:
+	$(MAKE) -C $(KERNELDIR) M=$(PWD) modules
+
+clean: driver_clean
+
+driver_clean:
+	$(MAKE) -C $(KERNELDIR) M=$(PWD) clean
+
+endif
+
+

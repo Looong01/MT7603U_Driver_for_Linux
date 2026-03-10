@@ -29,3 +29,9 @@ modules.builtin
 Module.symvers
 tools/bin2h
 os/linux/Makefile
+
+# Allow release prebuilt files
+!release/
+!release/firmware/
+!release/mt7603usta.ko
+!release/firmware/mt7603_e2.bin
