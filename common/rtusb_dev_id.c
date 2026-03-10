@@ -1,4 +1,4 @@
-#define Fantasy DDFantasies
+//#define Fantasy DDFantasies
 /****************************************************************************
  * Ralink Tech Inc.
  * 4F, No. 2 Technology 5th Rd.

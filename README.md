@@ -1,83 +1,188 @@
+# MT7603U USB WiFi 驱动
 
-## MT7603 with USB interface
+基于 Ralink 厂商驱动的 MT7603U USB 无线网卡 Linux 驱动，已适配 **Ubuntu 24.04 LTS (kernel 6.8 ~ 6.17+)**。
 
-driver version from `include/os/rt_linux.h` is `JEDI.L0.MP1.mt7603u.v1.14`
+> 驱动版本: `JEDI.L0.MP1.mt7603u.v1.14` (来自 `include/os/rt_linux.h`)
 
-this repo will deprecated while mt76 driver support mt7603 with usb interface.
+---
 
-#### Support chip include
+## 支持设备
 
-`MT7601U` , `MT7603U` .
+| USB ID | 芯片 | 已测试设备 |
+|--------|------|-----------|
+| `0e8d:760c` | MT7603U | 360随身WiFi 3 |
+| `0e8d:7603` | MT7603U | 通用 MT7603U 设备 |
 
-mt7603u: driver version `JEDI.L0.MP1.mt7603u.v1.14` at [this branch](https://gitlab.com/ChalesYu/buildroot_platform_hardware_wifi_mtk_drivers_mt7603/tree/pub-test-v20220304).
+其他可能兼容的设备（未测试）:
+- ogemray GWF-1D07 / GWF-1M02
+- comfast CF-WU825N V2
+- lb-link BL-WN620A(7603) / BL-M7603NU1
+- mercury MW300UM V4
 
-mt7601u: driver version `JEDI.MP1.mt7601u.v1.11` at [this branch](https://gitlab.com/ChalesYu/buildroot_platform_hardware_wifi_mtk_drivers_mt7603/tree/mt7601u).
+更多 USB ID 可在 `common/rtusb_dev_id.c` 中添加。
 
+---
 
+## 一键安装（推荐）
 
-If you got kernel panic when loading this driver, force-reboot and give more try can have a better luck.
+### 方式一：直接安装
 
-Please note, this driver based on old ralink vendor driver, unstable.Void Warry. May cause kernel panic when loading is known issue.
-
-If you have usb wifi based on mt7603u and interest on this , feel free to test this driver , and let mt76 driver support mt7603u ASAP.
-
-branch `mt76-03-usb` is based on mt76 driver clone from OpenWRT. But this branch didn't complete. Only have driver compiled, need real hardware to debug and fix.
-
-### How to use
-
-install linux-header
-
-more USB ID can be add to `common/rtusb_dev_id.c`
-
-place `mt7603_firmware/MT7603USTA.dat` to `/lib/firmware/MT7603USTA.dat`
-
-place `mt7603_firmware/mt7603_e2.bin` to `/lib/firmware/mt7603_e2.bin`
-
-get firmware `mt7603_e1.bin`,`mt7603_e2.bin` from [OpenWRT mt76 repo](https://github.com/openwrt/mt76/tree/master/firmware) and place to `/lib/firmware/mt7603_e1.bin` and `/lib/firmware/mt7603_e2.bin`
-
-```
+```bash
 git clone https://gitlab.com/ChalesYu/buildroot_platform_hardware_wifi_mtk_drivers_mt7603.git
-cd buildroot_platform_hardware_wifi_mtk_drivers_mt7603/
+cd buildroot_platform_hardware_wifi_mtk_drivers_mt7603
 git checkout pub-test-v20220304
-make KSRC=/lib/modules/$(uname -r)/build -j2
+sudo bash install.sh
+```
+
+### 方式二：DKMS 安装（内核更新后自动重编译）
+
+```bash
+git clone https://gitlab.com/ChalesYu/buildroot_platform_hardware_wifi_mtk_drivers_mt7603.git
+cd buildroot_platform_hardware_wifi_mtk_drivers_mt7603
+git checkout pub-test-v20220304
+sudo bash dkms-install.sh
+```
+
+### 卸载
+
+```bash
+sudo bash uninstall.sh
+```
+
+---
+
+## 手动编译安装
+
+### 1. 环境要求
+
+| 项目 | 要求 |
+|------|------|
+| 操作系统 | Ubuntu 24.04 LTS (Noble Numbat) |
+| 内核版本 | 6.8+ (已测试 6.17.0-14-generic) |
+| 编译工具 | gcc, make, build-essential |
+| 内核头文件 | linux-headers-$(uname -r) |
+
+安装依赖:
+
+```bash
+sudo apt update
+sudo apt install build-essential linux-headers-$(uname -r)
+```
+
+### 2. 编译
+
+```bash
+cd buildroot_platform_hardware_wifi_mtk_drivers_mt7603/
+make clean
+make KSRC=/lib/modules/$(uname -r)/build DARK_MODE=NO -j$(nproc)
+```
+
+> **注意**: `DARK_MODE=NO` 参数是必需的，否则驱动会使用 `0x0DDF` 而非 `0x760C` 作为 USB ID，导致无法识别 360随身WiFi 等设备。
+
+编译成功后，驱动文件位于 `os/linux/mt7603usta.ko`。
+
+### 3. 安装固件
+
+```bash
 sudo cp mt7603_firmware/MT7603USTA.dat /lib/firmware/
 sudo cp mt7603_firmware/mt7603_e2.bin /lib/firmware/
+```
+
+### 4. 安装并加载驱动
+
+```bash
+# 复制驱动到系统目录
 sudo cp os/linux/mt7603usta.ko /lib/modules/$(uname -r)/kernel/drivers/net/wireless/
 sudo depmod -a
+
+# 加载驱动
 sudo modprobe mt7603usta
 ```
 
-load compiled driver (for reference)
+或不安装到系统目录，临时加载（重启后失效）:
 
-```
-sudo modprobe cfg80211
-sudo insmod os/linux/mt7603usta.ko mac=XX:XX:XX:XX:XX:XX
-```
-
-and , maybe also need
-
-```
-service  NetworkManager restart
+```bash
+sudo insmod os/linux/mt7603usta.ko
 ```
 
-### Should Supported Hardware (NOT TEST)
+### 5. 验证
 
+```bash
+# 检查驱动是否加载
+lsmod | grep mt7603usta
+
+# 查看网络接口 (应出现 wlx* 开头的接口)
+ip link show
+
+# 扫描 WiFi
+nmcli device wifi list
+
+# 连接 WiFi
+nmcli device wifi connect "SSID" password "密码"
 ```
-ogemray GWF-1D07
-ogemray GWF-1M02
-comfast CF-WU825N V2
-lb-link BL-WN620A(7603)
-lb-link BL-M7603NU1
-mercury MW300UM V4
+
+---
+
+## 内核适配说明 (6.8+ 内核改动)
+
+本驱动基于旧版 Ralink 厂商驱动，移植到新内核需要以下适配:
+
+| 文件 | 修改内容 |
+|------|---------|
+| `os/linux/Makefile.6` | 添加 `ccflags-y += $(EXTRA_CFLAGS)` (新内核不再隐式传递 EXTRA_CFLAGS) |
+| `include/os/rt_linux.h` | `asm/uaccess.h` → `linux/uaccess.h`, `asm/unaligned.h` → `linux/unaligned.h` |
+| `os/linux/rt_linux.c` | `del_timer_sync()` → `timer_delete_sync()` |
+| `os/linux/cfg80211/cfg80211.c` | 适配 cfg80211 回调签名变化: `tdls_mgmt` 增加 `link_id`、`change_beacon` 使用 `cfg80211_ap_update`、`set_monitor_channel` 增加 `net_device`、`set_wiphy_params` 增加 `radio_idx` |
+
+---
+
+## 故障排除
+
+### 加载后无网络接口
+
+```bash
+# 检查 dmesg 日志
+sudo dmesg | grep -iE "mt7603\|mt_drv\|error"
+
+# 尝试重新插拔 USB 设备，然后:
+sudo modprobe mt7603usta
+
+# 或重启 NetworkManager
+sudo systemctl restart NetworkManager
 ```
 
-### Build for OpenWRT
+### 编译失败: 找不到内核头文件
 
-use Makefile.backports as Makefile
+```bash
+sudo apt install linux-headers-$(uname -r)
+```
 
-after compile and load the `mt7603usta.ko`, the netifd script will not work in OpenWRT.
+### 卸载驱动
 
-So, to start an AP, need to make a config file like `hostapd.conf`, then using hostapd command manually.
+```bash
+sudo rmmod mt7603usta      # 临时卸载 (不删除文件，重启后可用 modprobe 重新加载)
+sudo bash uninstall.sh     # 完全卸载
+```
+
+### Kernel Panic
+
+该驱动基于旧厂商代码，极端情况下可能导致内核崩溃。长按电源键强制重启即可恢复。如果使用了 `install.sh` 安装到系统目录，可在重启后执行 `sudo bash uninstall.sh` 卸载。
+
+---
+
+## Build for OpenWRT
+
+use `Makefile.backports` as Makefile. After compile and load `mt7603usta.ko`, the netifd script will not work in OpenWRT. To start an AP, make a config file like `hostapd.conf`, then use the hostapd command manually.
+
+---
+
+## 原始信息
+
+- 上游仓库: [GitLab](https://gitlab.com/ChalesYu/buildroot_platform_hardware_wifi_mtk_drivers_mt7603)
+- mt7603u 分支: `pub-test-v20220304`
+- mt7601u 分支: `mt7601u` (驱动版本 `JEDI.MP1.mt7601u.v1.11`)
+- 固件来源: [OpenWRT mt76](https://github.com/openwrt/mt76/tree/master/firmware)
+- 本驱动在主线 mt76 驱动支持 MT7603U USB 后将不再需要
 
 
 ### Test New USB Device ID

@@ -400,6 +400,7 @@ static int CFG80211_OpsChannelSet(
 
 #if (LINUX_VERSION_CODE >= KERNEL_VERSION(3,6,0))
 static int CFG80211_OpsMonitorChannelSet(struct wiphy *pWiphy,
+					 struct net_device *dev,
 					 struct cfg80211_chan_def *chandef)
 {
 	VOID *pAd;
@@ -1255,6 +1256,7 @@ Note:
 */
 static int CFG80211_OpsWiphyParamsSet(
 	IN struct wiphy						*pWiphy,
+	IN int								radio_idx,
 	IN UINT32							Changed)
 {
 	VOID *pAd;
@@ -2306,20 +2308,13 @@ static int CFG80211_OpsTdlsMgmt
 	( 
 	IN struct wiphy *pWiphy,
     IN struct net_device *pDev,
-#if (LINUX_VERSION_CODE >= KERNEL_VERSION(3, 15, 0))
 	IN const u8 *peer,
-#else
-    IN u8 *peer,
-#endif
+	IN int link_id,
     IN u8 action_code, 
     IN u8 dialog_token,
     IN u16 status_code,
-#if (LINUX_VERSION_CODE >= KERNEL_VERSION(3, 15, 0))
 	IN u32 peer_capability,
-#if (LINUX_VERSION_CODE >= KERNEL_VERSION(3, 17, 0))
 	IN bool initiator,
-#endif
-#endif
     IN const u8 *extra_ies,
     IN size_t extra_ies_len
 	)
@@ -2844,8 +2839,9 @@ static int CFG80211_OpsStartAp(
 static int CFG80211_OpsChangeBeacon(
 	struct wiphy *pWiphy,
 	struct net_device *netdev,
-	struct cfg80211_beacon_data *info)
+	struct cfg80211_ap_update *update)
 {
+	struct cfg80211_beacon_data *info = &update->beacon;
 	VOID *pAd;
 	CMD_RTPRIV_IOCTL_80211_BEACON bcn;
 	UCHAR *beacon_head_buf = NULL;

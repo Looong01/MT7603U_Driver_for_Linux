@@ -68,9 +68,9 @@
 /* load firmware */
 #define __KERNEL_SYSCALLS__
 #include <linux/unistd.h>
-#include <asm/uaccess.h>
+#include <linux/uaccess.h>
 #include <asm/types.h>
-#include <asm/unaligned.h>	/* for get_unaligned() */
+#include <linux/unaligned.h>	/* for get_unaligned() */
 
 #if LINUX_VERSION_CODE >= KERNEL_VERSION(2,6,27)
 #include <linux/pid.h>

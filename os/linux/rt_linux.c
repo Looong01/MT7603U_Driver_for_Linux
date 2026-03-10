@@ -216,7 +216,7 @@ static inline VOID __RTMP_OS_Del_Timer(
 {
 #if (LINUX_VERSION_CODE >= KERNEL_VERSION(4, 15, 0))
 	if (timer_pending(&pTimer->t))
-		*pCancelled = (BOOLEAN)del_timer_sync(&pTimer->t);
+		*pCancelled = (BOOLEAN)timer_delete_sync(&pTimer->t);
 #else
  	if (timer_pending(pTimer))
  		*pCancelled = del_timer_sync(pTimer);
