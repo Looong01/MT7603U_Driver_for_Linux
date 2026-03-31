@@ -31,8 +31,7 @@
 
 ```bash
 git clone https://github.com/Looong01/MT7603U_Driver_for_Linux.git
-cd buildroot_platform_hardware_wifi_mtk_drivers_mt7603
-git checkout pub-test-v20220304
+cd MT7603U_Driver_for_Linux
 sudo bash install.sh
 ```
 
@@ -40,8 +39,7 @@ sudo bash install.sh
 
 ```bash
 git clone https://github.com/Looong01/MT7603U_Driver_for_Linux.git
-cd buildroot_platform_hardware_wifi_mtk_drivers_mt7603
-git checkout pub-test-v20220304
+cd MT7603U_Driver_for_Linux
 sudo bash dkms-install.sh
 ```
 
